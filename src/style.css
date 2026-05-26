@@ -177,6 +177,10 @@ body {
   width: 7rem;
 }
 
+.field-link {
+  flex: 1 1 14rem;
+}
+
 .field-checkbox {
   display: flex;
   align-items: center;
@@ -316,6 +320,26 @@ body {
 
 .wl-name {
   font-weight: 600;
+}
+
+a.wl-link {
+  color: var(--text);
+  text-decoration: none;
+}
+
+a.wl-link::after {
+  content: ' ↗';
+  color: var(--text-dim);
+  font-size: 0.8em;
+}
+
+a.wl-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.is-acquired a.wl-link {
+  color: var(--text-dim);
 }
 
 .wl-price {

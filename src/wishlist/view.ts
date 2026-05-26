@@ -1,5 +1,5 @@
 import { clear, h } from '../dom.ts';
-import { CURRENCIES, type Currency, type WishlistItem } from './types.ts';
+import type { WishlistItem } from './types.ts';
 import type { WishlistStore } from './store.ts';
 import { formatMoney, totalsByCurrency } from './totals.ts';
 
@@ -27,8 +27,13 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
     class: 'field-input',
   });
 
-  const currencySelect = h('select', { id: 'wl-currency', name: 'currency', class: 'field-input' });
-  for (const c of CURRENCIES) currencySelect.append(h('option', { value: c, text: c }));
+  const linkInput = h('input', {
+    type: 'url',
+    id: 'wl-link',
+    name: 'link',
+    placeholder: 'https://… (optional)',
+    class: 'field-input',
+  });
 
   const estimateInput = h('input', { type: 'checkbox', id: 'wl-estimate', name: 'estimate' });
 
@@ -47,12 +52,12 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
       nameInput,
     ]),
     h('div', { class: 'field' }, [
-      h('label', { for: 'wl-price', text: 'Price', class: 'field-label' }),
+      h('label', { for: 'wl-price', text: 'Price (RON)', class: 'field-label' }),
       priceInput,
     ]),
-    h('div', { class: 'field' }, [
-      h('label', { for: 'wl-currency', text: 'Currency', class: 'field-label' }),
-      currencySelect,
+    h('div', { class: 'field field-link' }, [
+      h('label', { for: 'wl-link', text: 'Link', class: 'field-label' }),
+      linkInput,
     ]),
     h('label', { class: 'field-checkbox', for: 'wl-estimate' }, [
       estimateInput,
@@ -67,10 +72,12 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
     const price = Number.parseFloat(priceInput.value);
     if (!name || !Number.isFinite(price) || price < 0) return;
 
+    const link = linkInput.value.trim();
     const draft = {
       name,
       price,
-      currency: currencySelect.value as Currency,
+      currency: 'RON' as const,
+      link: link || undefined,
       estimate: estimateInput.checked,
     };
     if (editingId) store.update(editingId, draft);
@@ -89,7 +96,7 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
     editingId = item.id;
     nameInput.value = item.name;
     priceInput.value = String(item.price);
-    currencySelect.value = item.currency;
+    linkInput.value = item.link ?? '';
     estimateInput.checked = item.estimate;
     submitBtn.textContent = 'Save changes';
     cancelBtn.hidden = false;
@@ -160,10 +167,21 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
       const badges = h('span', { class: 'badges' });
       if (item.estimate) badges.append(h('span', { class: 'badge badge-estimate', text: 'estimate' }));
 
+      const nameEl = item.link
+        ? h('a', {
+            class: 'wl-name wl-link',
+            text: item.name,
+            href: item.link,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            title: 'Open product page',
+          })
+        : h('span', { class: 'wl-name', text: item.name });
+
       const row = h('li', { class: item.acquired ? 'wl-item is-acquired' : 'wl-item' }, [
         h('label', { class: 'wl-check' }, [checkbox]),
         h('div', { class: 'wl-main' }, [
-          h('span', { class: 'wl-name', text: item.name }),
+          nameEl,
           badges,
         ]),
         h('span', { class: 'wl-price', text: formatMoney(item.price, item.currency) }),

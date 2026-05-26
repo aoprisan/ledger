@@ -14,12 +14,13 @@ function parseItem(value: unknown): WishlistItem | null {
   const v = value as Record<string, unknown>;
   if (typeof v.id !== 'string' || typeof v.name !== 'string') return null;
   if (typeof v.price !== 'number' || !Number.isFinite(v.price)) return null;
-  if (!isCurrency(v.currency)) return null;
   return {
     id: v.id,
     name: v.name,
     price: v.price,
-    currency: v.currency,
+    // Legacy data may carry a since-removed currency (e.g. EUR); treat as RON.
+    currency: isCurrency(v.currency) ? v.currency : 'RON',
+    link: typeof v.link === 'string' && v.link.trim() !== '' ? v.link : undefined,
     estimate: v.estimate === true,
     acquired: v.acquired === true,
     createdAt: typeof v.createdAt === 'number' ? v.createdAt : Date.now(),
