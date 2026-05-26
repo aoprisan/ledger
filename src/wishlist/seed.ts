@@ -23,12 +23,11 @@ export function seedItems(): WishlistItem[] {
       estimate: false,
     },
     {
-      // Owner's figure was €620; converted at ~5 RON/€, hence an estimate.
       name: 'Asrar order — Devil Doll & Sarcophagus',
-      price: 3100,
+      price: 620,
       currency: 'RON',
       link: 'https://www.asrarlabel.com/shop/',
-      estimate: true,
+      estimate: false,
     },
     {
       name: 'Behemoth — The Shit Ov God (box set)',
