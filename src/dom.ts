@@ -6,6 +6,9 @@ type Props = {
   name?: string;
   id?: string;
   for?: string;
+  href?: string;
+  target?: string;
+  rel?: string;
   placeholder?: string;
   min?: string;
   step?: string;
