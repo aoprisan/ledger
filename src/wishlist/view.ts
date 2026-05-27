@@ -11,7 +11,7 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
     type: 'text',
     id: 'wl-name',
     name: 'name',
-    placeholder: 'e.g. Mayhem — box set',
+    placeholder: 'e.g. Mayhem — De Mysteriis Dom Sathanas (box)',
     required: true,
     class: 'field-input',
   });
@@ -37,22 +37,23 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
 
   const estimateInput = h('input', { type: 'checkbox', id: 'wl-estimate', name: 'estimate' });
 
-  const submitBtn = h('button', { type: 'submit', class: 'btn btn-primary', text: 'Add to wishlist' });
+  const submitBtn = h('button', { type: 'submit', class: 'btn btn-primary', text: 'Inscribe' });
   const cancelBtn = h('button', {
     type: 'button',
     class: 'btn btn-ghost',
-    text: 'Cancel',
+    text: 'Abandon',
     on: { click: () => resetForm() },
   });
   cancelBtn.hidden = true;
 
   const form = h('form', { class: 'wl-form', ariaLabel: 'Add or edit a wishlist item' }, [
+    h('p', { class: 'form-title', text: 'Inscribe a want' }),
     h('div', { class: 'field field-grow' }, [
-      h('label', { for: 'wl-name', text: 'Item', class: 'field-label' }),
+      h('label', { for: 'wl-name', text: 'Relic', class: 'field-label' }),
       nameInput,
     ]),
     h('div', { class: 'field' }, [
-      h('label', { for: 'wl-price', text: 'Price (RON)', class: 'field-label' }),
+      h('label', { for: 'wl-price', text: 'Price · RON', class: 'field-label' }),
       priceInput,
     ]),
     h('div', { class: 'field field-link' }, [
@@ -88,7 +89,7 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
   function resetForm(): void {
     editingId = null;
     form.reset();
-    submitBtn.textContent = 'Add to wishlist';
+    submitBtn.textContent = 'Inscribe';
     cancelBtn.hidden = true;
   }
 
@@ -98,7 +99,7 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
     priceInput.value = String(item.price);
     linkInput.value = item.link ?? '';
     estimateInput.checked = item.estimate;
-    submitBtn.textContent = 'Save changes';
+    submitBtn.textContent = 'Seal changes';
     cancelBtn.hidden = false;
     nameInput.focus();
     form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -111,7 +112,7 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
   root.append(
     h('p', {
       class: 'wl-intro',
-      text: 'Track gear and records you want. Mark items as acquired once bought — totals update automatically.',
+      text: 'Records and relics you hunger for. Strike an item once it is in your grasp — the tally bleeds down on its own.',
     }),
     form,
     summary,
@@ -127,14 +128,15 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
       summary.append(
         h('div', { class: 'summary-card' }, [
           h('span', { class: 'summary-currency', text: t.currency }),
+          h('span', { class: 'summary-label', text: 'Yet to claim' }),
           h('span', {
             class: 'summary-remaining',
             text: formatMoney(t.remaining, t.currency),
-            title: 'Still to buy',
+            title: 'Still to claim',
           }),
           h('span', {
             class: 'summary-total',
-            text: `${formatMoney(t.total, t.currency)} total`,
+            text: `of ${formatMoney(t.total, t.currency)} conjured`,
           }),
         ]),
       );
@@ -146,7 +148,7 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
 
     if (items.length === 0) {
       list.append(
-        h('li', { class: 'wl-empty', text: 'Nothing on the wishlist yet — add something above.' }),
+        h('li', { class: 'wl-empty', text: 'The ledger lies barren. Inscribe your first want above.' }),
       );
       return;
     }
@@ -189,18 +191,18 @@ export function mountWishlist(root: HTMLElement, store: WishlistStore): void {
           h('button', {
             type: 'button',
             class: 'btn btn-icon',
-            text: 'Edit',
+            text: 'Amend',
             ariaLabel: `Edit ${item.name}`,
             on: { click: () => startEdit(item) },
           }),
           h('button', {
             type: 'button',
             class: 'btn btn-icon btn-danger',
-            text: 'Delete',
+            text: 'Banish',
             ariaLabel: `Delete ${item.name}`,
             on: {
               click: () => {
-                if (confirm(`Remove "${item.name}" from the wishlist?`)) {
+                if (confirm(`Banish "${item.name}" from the ledger?`)) {
                   if (editingId === item.id) resetForm();
                   store.remove(item.id);
                 }

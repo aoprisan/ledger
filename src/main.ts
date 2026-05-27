@@ -20,7 +20,7 @@ function comingSoon(title: string, blurb: string): HTMLElement {
     h('div', { class: 'soon-card' }, [
       h('h2', { text: title }),
       h('p', { text: blurb }),
-      h('span', { class: 'badge badge-soon', text: 'Coming soon' }),
+      h('span', { class: 'badge badge-soon', text: 'Not yet summoned' }),
     ]),
   ]);
 }
@@ -33,12 +33,12 @@ const tabs: Tab[] = [
   {
     id: 'income',
     label: 'Income',
-    panel: comingSoon('Income', 'Log earnings and recurring income here.'),
+    panel: comingSoon('Income', 'Earnings and recurring tithes will be tallied here. The rite is not yet complete.'),
   },
   {
     id: 'expenses',
     label: 'Expenses',
-    panel: comingSoon('Expenses', 'Track spending and see where the money goes.'),
+    panel: comingSoon('Expenses', 'Where the coin bleeds out — soon to be reckoned in full. The rite is not yet complete.'),
   },
 ];
 
@@ -73,14 +73,17 @@ for (const tab of tabs) {
 app.append(
   h('header', { class: 'app-header' }, [
     h('div', { class: 'brand' }, [
-      h('span', { class: 'brand-mark', ariaLabel: 'Ledger logo' }),
-      h('h1', { class: 'brand-title', text: 'Ledger' }),
+      h('span', { class: 'brand-mark', ariaLabel: 'Ledger sigil' }),
+      h('div', { class: 'brand-text' }, [
+        h('h1', { class: 'brand-title', text: 'Ledger' }),
+        h('p', { class: 'brand-tag', text: 'Grimoire of relics & records' }),
+      ]),
     ]),
     nav,
   ]),
   panels,
   h('footer', { class: 'app-footer' }, [
-    h('span', { text: 'Data is stored locally on this device.' }),
+    h('span', { text: 'All sins recorded locally — nothing leaves this device.' }),
   ]),
 );
 
