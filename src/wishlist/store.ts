@@ -21,6 +21,10 @@ function parseItem(value: unknown): WishlistItem | null {
     // Legacy data may carry a since-removed currency (e.g. EUR); treat as RON.
     currency: isCurrency(v.currency) ? v.currency : 'RON',
     link: typeof v.link === 'string' && v.link.trim() !== '' ? v.link : undefined,
+    releaseDate:
+      typeof v.releaseDate === 'string' && v.releaseDate.trim() !== ''
+        ? v.releaseDate
+        : undefined,
     estimate: v.estimate === true,
     acquired: v.acquired === true,
     createdAt: typeof v.createdAt === 'number' ? v.createdAt : Date.now(),

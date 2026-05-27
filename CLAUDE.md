@@ -5,8 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 `ledger` is a personal income/expenses/wishlist tracker shipped as an installable PWA.
-Today only the **Wishlist** tab is implemented; Income and Expenses are "Coming soon" stub
-panels in `src/main.ts`. The app is **framework-free**: vanilla TypeScript with direct DOM
+The **Wishlist** and **Reliquary** tabs are implemented (the Reliquary holds items you've
+claimed/purchased — both tabs are two views over the same wishlist store, so checking an
+item's box moves it between them); Income and Expenses are "Coming soon" stub panels in
+`src/main.ts`. The app is **framework-free**: vanilla TypeScript with direct DOM
 manipulation, no React/Vue/Svelte and no runtime dependencies. All user data lives in the
 browser's `localStorage` — there is no backend.
 
@@ -37,8 +39,11 @@ The wishlist feature lives in `src/wishlist/`:
   under key `ledger.wishlist.v1`. On first run it seeds from `seed.ts`. Mutations
   (`add`/`update`/`remove`/`toggleAcquired`) call `commit()` which persists then notifies
   `subscribe()` listeners — a minimal observer pattern that drives re-renders.
-- `view.ts` — `mountWishlist(panel, store)` renders the form, per-currency totals, and the
-  item list, re-rendering on store updates.
+- `view.ts` — `mountWishlist(panel, store)` (form + totals + the *unclaimed* items) and
+  `mountReliquary(panel, store)` (totals + the *claimed* items, no form). Both reuse the
+  private `buildItemRow`/`renderSummary` helpers and re-render on store updates; an item's
+  `acquired` flag decides which list it appears in. Items with no `releaseDate` show an
+  `out` badge; a future `releaseDate` shows a red "rises" date chip.
 - `totals.ts` — aggregation (`totalsByCurrency`) and `Intl.NumberFormat` money formatting.
 
 Data flow: **store mutation → persist to localStorage → notify subscribers → view re-renders**.

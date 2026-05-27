@@ -9,6 +9,8 @@ export interface WishlistItem {
   currency: Currency;
   /** Where to find/buy the item online. Empty when unknown. */
   link?: string | undefined;
+  /** Release / availability date as an ISO `yyyy-mm-dd` string. Empty when unknown. */
+  releaseDate?: string | undefined;
   /** True when the price is a rough guess rather than a known figure. */
   estimate: boolean;
   /** True once the item has been bought. */
@@ -19,5 +21,5 @@ export interface WishlistItem {
 /** The shape used when creating or editing an item (no generated fields). */
 export type WishlistDraft = Pick<
   WishlistItem,
-  'name' | 'price' | 'currency' | 'link' | 'estimate'
+  'name' | 'price' | 'currency' | 'link' | 'releaseDate' | 'estimate'
 >;

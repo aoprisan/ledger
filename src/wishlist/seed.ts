@@ -3,7 +3,8 @@ import type { WishlistItem } from './types.ts';
 /**
  * Initial wishlist, used only the first time the app runs on a device
  * (when no saved data exists yet). All prices are in RON; `link` points to
- * where the item can be found/bought online. Everything is editable in-app.
+ * where the item can be found/bought online and `releaseDate` (ISO yyyy-mm-dd)
+ * marks an upcoming release where known. Everything is editable in-app.
  */
 export function seedItems(): WishlistItem[] {
   const base = Date.now();
@@ -23,24 +24,27 @@ export function seedItems(): WishlistItem[] {
       estimate: false,
     },
     {
-      name: 'Asrar order — Devil Doll & Sarcophagus',
+      name: 'Asrar: Devil Doll + Sarcophagus',
       price: 620,
       currency: 'RON',
       link: 'https://www.asrarlabel.com/shop/',
       estimate: false,
     },
     {
-      name: 'Behemoth — The Shit Ov God (box set)',
+      name: 'Behemoth — I, Scvlptor',
       price: 600,
       currency: 'RON',
-      link: 'https://behemoth-store.com/collections/the-shit-ov-god',
+      link: 'https://behemoth-store.com/',
+      releaseDate: '2026-06-01',
       estimate: true,
     },
     {
-      name: 'Dissection — Storm of the Light’s Bane (box set)',
+      name: 'Dissection — Reinkaos',
       price: 900,
       currency: 'RON',
-      link: 'https://darknessshallrise.de/product/dissection-swe-i-am-the-great-shadow-19-tape-box-pre-order/',
+      // Not yet available — point at the label's main site until a product page exists.
+      link: 'https://darknessshallrise.de/',
+      releaseDate: '2026-06-08',
       estimate: false,
     },
   ];

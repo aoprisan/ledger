@@ -298,6 +298,14 @@ body::after {
   flex: 1 1 14rem;
 }
 
+.field-date {
+  flex: 0 0 auto;
+}
+
+#wl-date {
+  width: 11rem;
+}
+
 .field-label {
   font-family: var(--font-display);
   font-size: 0.68rem;
@@ -627,6 +635,30 @@ a.wl-link:hover {
   border-bottom-color: var(--blood);
 }
 
+/* Release date — a muted rune beside the relic; bleeds red while still ahead. */
+.wl-date {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--bone-faint);
+  white-space: nowrap;
+}
+
+.wl-date::before {
+  content: '✠ ';
+  color: var(--bone-faint);
+}
+
+.wl-date.is-upcoming {
+  color: var(--blood-ink);
+}
+
+.wl-date.is-upcoming::before {
+  content: '⛧ ';
+  color: var(--blood);
+}
+
 .wl-price {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -639,37 +671,6 @@ a.wl-link:hover {
 .wl-actions {
   display: flex;
   gap: 0.4rem;
-}
-
-/* Claimed — frostbitten, struck from the hunt. */
-.wl-item.is-acquired {
-  opacity: 0.62;
-}
-
-.wl-item.is-acquired::before {
-  color: var(--frost-dim);
-}
-
-.is-acquired .wl-name,
-.is-acquired .wl-price {
-  text-decoration: line-through;
-  text-decoration-color: var(--frost);
-  color: var(--frost);
-}
-
-.is-acquired a.wl-link {
-  color: var(--frost);
-}
-
-.wl-item.is-acquired .wl-main::after {
-  content: '☩ claimed';
-  font-family: var(--font-display);
-  font-size: 0.6rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--frost);
-  border: 1px solid var(--frost-dim);
-  padding: 0.05rem 0.4rem;
 }
 
 .wl-empty {
@@ -703,6 +704,12 @@ a.wl-link:hover {
 .badge-estimate {
   border-color: var(--blood);
   color: var(--blood-ink);
+}
+
+/* Out — already released, free to be claimed. Neutral, not a summons. */
+.badge-out {
+  border-color: var(--bone-dim);
+  color: var(--bone-dim);
 }
 
 .badge-soon {
@@ -833,6 +840,13 @@ a.wl-link:hover {
 
 /* -------------------------------------------------------------- Mobile */
 @media (max-width: 560px) {
+  /* Four tabs share the row now — tighten so "Reliquary" still fits. */
+  .tab {
+    padding-inline: 0.3rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+
   .form-actions {
     margin-left: 0;
     width: 100%;

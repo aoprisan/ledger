@@ -2,7 +2,7 @@ import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import { h } from './dom.ts';
 import { WishlistStore } from './wishlist/store.ts';
-import { mountWishlist } from './wishlist/view.ts';
+import { mountWishlist, mountReliquary } from './wishlist/view.ts';
 
 registerSW({ immediate: true });
 
@@ -25,11 +25,19 @@ function comingSoon(title: string, blurb: string): HTMLElement {
   ]);
 }
 
+// One store backs both relic tabs: claiming an item in the Wishlist moves it
+// to the Reliquary, and both views re-render from the same source of truth.
+const store = new WishlistStore();
+
 const wishlistPanel = h('section', { class: 'panel' });
-mountWishlist(wishlistPanel, new WishlistStore());
+mountWishlist(wishlistPanel, store);
+
+const reliquaryPanel = h('section', { class: 'panel' });
+mountReliquary(reliquaryPanel, store);
 
 const tabs: Tab[] = [
   { id: 'wishlist', label: 'Wishlist', panel: wishlistPanel },
+  { id: 'reliquary', label: 'Reliquary', panel: reliquaryPanel },
   {
     id: 'income',
     label: 'Income',
