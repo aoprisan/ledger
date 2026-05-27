@@ -9,9 +9,9 @@ const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = resolve(here, '..', 'public');
 mkdirSync(publicDir, { recursive: true });
 
-const BG = [0x0e, 0x0e, 0x14];
-const RED = [0xb3, 0x12, 0x2b];
-const LIGHT = [0xec, 0xed, 0xf2];
+const BG = [0x06, 0x06, 0x08];
+const BLOOD = [0x9a, 0x06, 0x12];
+const BONE = [0xe9, 0xe6, 0xdd];
 
 function createCanvas(size) {
   const buf = Buffer.alloc(size * size * 4);
@@ -25,46 +25,61 @@ function createCanvas(size) {
     buf[i + 2] = b;
     buf[i + 3] = a;
   };
-  const inRoundRect = (px, py, x, y, w, h, r) => {
-    if (px < x || py < y || px >= x + w || py >= y + h) return false;
-    const cx = Math.min(Math.max(px, x + r), x + w - r);
-    const cy = Math.min(Math.max(py, y + r), y + h - r);
-    return (px - cx) ** 2 + (py - cy) ** 2 <= r * r;
+  // Stamp a filled disc — the brush used to paint thick strokes.
+  const disc = (cx, cy, r, color) => {
+    for (let dy = -Math.ceil(r); dy <= Math.ceil(r); dy++) {
+      for (let dx = -Math.ceil(r); dx <= Math.ceil(r); dx++) {
+        if (dx * dx + dy * dy <= r * r) set(cx + dx, cy + dy, color);
+      }
+    }
   };
   return {
     buf,
     fillAll: (color) => {
       for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) set(x, y, color);
     },
-    fillRoundRect: (x, y, w, h, r, color) => {
-      for (let py = Math.floor(y); py < y + h; py++) {
-        for (let px = Math.floor(x); px < x + w; px++) {
-          if (inRoundRect(px + 0.5, py + 0.5, x, y, w, h, r)) set(px, py, color);
-        }
+    strokeLine: (x0, y0, x1, y1, thick, color) => {
+      const r = thick / 2;
+      const steps = Math.ceil(Math.hypot(x1 - x0, y1 - y0));
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        disc(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, r, color);
+      }
+    },
+    strokeCircle: (cx, cy, radius, thick, color) => {
+      const r = thick / 2;
+      const steps = Math.ceil(2 * Math.PI * radius);
+      for (let i = 0; i <= steps; i++) {
+        const a = (i / steps) * 2 * Math.PI;
+        disc(cx + Math.cos(a) * radius, cy + Math.sin(a) * radius, r, color);
       }
     },
   };
 }
 
+// An inverted pentagram (single point down) ringed by a circle — the sigil.
 function drawIcon(size, pad) {
   const c = createCanvas(size);
   c.fillAll(BG);
 
-  const x0 = size * pad;
-  const cw = size * (1 - pad * 2);
-  const rh = cw * 0.2;
-  const gap = cw * 0.12;
-  const totalH = rh * 3 + gap * 2;
-  const y0 = (size - totalH) / 2;
-  const barX = x0 + rh + cw * 0.08;
-  const barW = x0 + cw - barX;
+  const cx = size / 2;
+  const cy = size / 2;
+  const radius = size * (0.5 - pad);
+  const verts = [];
+  for (let k = 0; k < 5; k++) {
+    const a = Math.PI / 2 + (k * 2 * Math.PI) / 5; // start at bottom, point down
+    verts.push([cx + Math.cos(a) * radius, cy + Math.sin(a) * radius]);
+  }
 
-  for (let i = 0; i < 3; i++) {
-    const y = y0 + i * (rh + gap);
-    c.fillRoundRect(x0, y, rh, rh, rh * 0.28, RED);
-    const bh = rh * 0.62;
-    const bw = i === 2 ? barW * 0.7 : barW;
-    c.fillRoundRect(barX, y + (rh - bh) / 2, bw, bh, bh / 2, LIGHT);
+  c.strokeCircle(cx, cy, radius, size * 0.03, BLOOD);
+
+  // Draw the star in one continuous pass: 0 → 2 → 4 → 1 → 3 → 0.
+  const order = [0, 2, 4, 1, 3, 0];
+  const t = size * 0.035;
+  for (let i = 0; i < order.length - 1; i++) {
+    const [x0, y0] = verts[order[i]];
+    const [x1, y1] = verts[order[i + 1]];
+    c.strokeLine(x0, y0, x1, y1, t, BONE);
   }
   return c.buf;
 }
@@ -113,15 +128,10 @@ writePNG('maskable-512x512.png', 512, 0.3);
 writePNG('apple-touch-icon.png', 180, 0.16);
 
 const favicon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ledger">
-  <rect width="64" height="64" rx="12" fill="#0e0e14"/>
-  <g>
-    <rect x="13" y="16" width="9" height="9" rx="2.5" fill="#b3122b"/>
-    <rect x="27" y="18" width="24" height="5" rx="2.5" fill="#ecedf2"/>
-    <rect x="13" y="29.5" width="9" height="9" rx="2.5" fill="#b3122b"/>
-    <rect x="27" y="31.5" width="24" height="5" rx="2.5" fill="#ecedf2"/>
-    <rect x="13" y="43" width="9" height="9" rx="2.5" fill="#b3122b"/>
-    <rect x="27" y="45" width="17" height="5" rx="2.5" fill="#ecedf2"/>
-  </g>
+  <rect width="64" height="64" rx="10" fill="#060608"/>
+  <circle cx="32" cy="32" r="25" fill="none" stroke="#9a0612" stroke-width="2.4"/>
+  <path d="M32 57 L17.31 11.77 L55.78 39.73 L8.22 39.73 L46.69 11.77 Z"
+    fill="none" stroke="#e9e6dd" stroke-width="2.6" stroke-linejoin="round"/>
 </svg>
 `;
 writeFileSync(resolve(publicDir, 'favicon.svg'), favicon);
